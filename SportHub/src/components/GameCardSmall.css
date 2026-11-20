@@ -1,14 +1,20 @@
+
 .game-card {
     width: calc(50% - 140px);
     min-width: 0;
     box-sizing: border-box;
 
     padding: 16px;
-    border: 1px solid #f3efef;
+    border: 1px solid var(--cor-borda);
     border-radius: 16px;
 
-    background-color: #262c3a;
-    color: white;
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
 }
 
 .game-card-head {
@@ -22,6 +28,7 @@
 }
 
 .game-card-head a {
+    color: var(--cor-texto);
     font-size: 20px;
     font-weight: 600;
 }
@@ -31,14 +38,15 @@
     cursor: pointer;
 }
 
-.game-card-head div{
+.game-card-head div {
     padding: 5px 10px;
     display: flex;
     justify-content: left;
 
-    border: 1px solid #f3efef;
+    border: 1px solid var(--cor-borda);
     border-radius: 20px;
 
+    color: var(--cor-texto-secundario);
     font-size: 13px;
 }
 
@@ -63,12 +71,14 @@
 }
 
 .team span {
+    color: var(--cor-texto);
     font-size: 14px;
 }
 
 .game-score {
     flex-shrink: 0;
     text-align: center;
+    color: var(--cor-texto);
     font-size: 16px;
     font-weight: bold;
 }
@@ -82,6 +92,7 @@
 .game-score small {
     display: block;
     margin-top: 4px;
+    color: var(--cor-texto-secundario);
     font-size: 18px;
     font-weight: normal;
 }
@@ -93,14 +104,18 @@
 
     padding-top: 20px;
 
-    border-top: 1px solid #f3efef;
+    border-top: 1px solid var(--cor-borda);
 
-    color: #f3efef;
+    color: var(--cor-texto-secundario);
     font-size: 14px;
 }
 
+.game-card-footer a {
+    color: var(--cor-texto-secundario);
+}
+
 .game-card-footer a:hover {
-    color: white;
+    color: var(--cor-texto);
     cursor: pointer;
     text-decoration: underline;
 }
@@ -115,15 +130,19 @@
 }
 
 .indicador-finalizado {
-  background-color: gray;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: gray;
 }
 
 @keyframes piscar {
-  0%, 100% {
-    opacity: 1;
-  }
+    0%, 100% {
+        opacity: 1;
+    }
 
-  50% {
-    opacity: 0.3;
-  }
+    50% {
+        opacity: 0.3;
+    }
 }
