@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ArrowLeft, Share2, Star, Trophy } from "lucide-react";
 import TeamCrest from "./TeamCrest.jsx";
 import { useApp } from "../context/useApp.jsx";
+import { useToast } from "../context/ToastContext.jsx";
 import "./MatchHeader.css";
+import Modal from "./Modal.jsx";
 
 function BolaIcone() {
     return (
@@ -50,7 +52,7 @@ function Time({ time, lado, favorito, aoFavoritar }) {
             type="button"
             className="match-icone-btn"
             aria-pressed={favorito}
-            aria-label={`Favoritar ${time.nome}`}
+            aria-label={favorito ? `Remover ${time.nome} dos favoritos` : `Adicionar ${time.nome} aos favoritos`}
             onClick={aoFavoritar} 
         >
             <Star size={16} fill={favorito ? "currentColor" : "none"} />
@@ -87,6 +89,8 @@ function formatarDataHora(iso) {
 
 export default function MatchHeader({ partida, aoVoltar }) {
     const { competicao, casa, visitante, placar, gols, status, dataHora } = partida;
+
+    const { mostrarToast } = useToast();
     
     const [linkCopiado, setLinkCopiado] = useState(false);
     const {
@@ -100,6 +104,68 @@ export default function MatchHeader({ partida, aoVoltar }) {
     const casaFavorita = ehTimeFavorito(casa.id);
     const visitanteFavorito = ehTimeFavorito(visitante.id);
 
+    const [remocaoPendente, setRemocaoPendente] = useState(null);
+
+    const fecharModal = useCallback(() => {
+        setRemocaoPendente(null);
+    }, []);
+
+    function alternarFavoritoPartida() {
+        if (partidaFavorita) {
+            setRemocaoPendente({
+                tipo: "partida",
+                id: partida.id,
+                nome: `${casa.nome} x ${visitante.nome}`
+            });
+            return;
+        }
+
+        alternarPartidaFavorita(partida.id);
+
+        mostrarToast(
+            "Partida adicionada aos favoritos!",
+            "sucesso"
+        );
+    }
+
+    function alternarFavoritoTime(time, favorito) {
+        if (favorito) {
+            setRemocaoPendente({
+                tipo: "time",
+                id: time.id,
+                nome: time.nome
+            });
+            return;
+        }
+
+        alternarTimeFavorito(time.id);
+
+        mostrarToast(
+            `${time.nome} adicionado aos favoritos!`,
+            "sucesso"
+        );
+    }
+
+    function confirmarRemocao() {
+        if (!remocaoPendente) return;
+
+        let mensagem = "";
+
+        if (remocaoPendente.tipo === "partida") {
+            alternarPartidaFavorita(remocaoPendente.id);
+            mensagem = "Partida removida dos favoritos!";
+        }
+
+        if (remocaoPendente.tipo === "time") {
+            alternarTimeFavorito(remocaoPendente.id);
+            mensagem = "Time removido dos favoritos!";
+        }
+
+        fecharModal();
+
+        mostrarToast(mensagem, "sucesso");
+    }  
+
     async function compartilhar() {
         const dados = {
             title: `${casa.nome} ${placar.casa} x ${placar.visitante} ${visitante.nome}`,
@@ -111,7 +177,14 @@ export default function MatchHeader({ partida, aoVoltar }) {
                 await navigator.share(dados);
             } else {
                 await navigator.clipboard.writeText(dados.url);
+
                 setLinkCopiado(true);
+
+                mostrarToast(
+                    "Link copiado com sucesso!",
+                    "info"
+                );
+
                 setTimeout(() => setLinkCopiado(false), 2000);
             }
         } catch {
@@ -120,79 +193,115 @@ export default function MatchHeader({ partida, aoVoltar }) {
     }
 
     return (
-        <header className="match-hero">
-            <button type="button" className="match-voltar" onClick={aoVoltar}>
-                <ArrowLeft size={16} />
-                Voltar para os jogos
-            </button>
+        <>
+            <header className="match-hero">
+                <button type="button" className="match-voltar" onClick={aoVoltar}>
+                    <ArrowLeft size={16} />
+                    Voltar para os jogos
+                </button>
 
-            <div className="match-competicao">
-                <p className="match-competicao__nome">
-                    <span className="match-competicao__icone" aria-hidden="true">
-                        <Trophy size={13} />
-                    </span>
-                    {competicao.nome}
-                    <span className="match-competicao__rodada">{competicao.rodada}</span>
-                </p>
-
-                <div className="match-acoes">
-                    <button
-                        type="button"
-                        className="match-acao"
-                        aria-pressed={partidaFavorita}
-                        onClick={() => alternarPartidaFavorita(partida.id)}
-                    >
-                        <Star
-                            size={16}
-                            fill={partidaFavorita ? "currentColor" : "none"}
-                        />
-                        {partidaFavorita ? "Favoritado" : "Favoritar"}
-                    </button>
-
-                    <button type="button" className="match-acao" onClick={compartilhar}>
-                        <Share2 size={16}/>
-                        <span aria-live="polite">{linkCopiado ? "Link copiado" : "Compartilhar"}</span>
-                    </button>
-                </div>
-            </div>
-        
-            <h1 className="sr-only">
-                {casa.nome} {placar.casa} x {placar.visitante} {visitante.nome}
-            </h1>
-
-            <div className="match-placar">
-                <div className="match-lado match-lado--casa">
-                    <Time
-                        time={casa}
-                        lado="casa"
-                        favorito={casaFavorita}
-                        aoFavoritar={() => alternarTimeFavorito(casa.id)}
-                    />
-                    <span className="match-placar__gols">{placar.casa}</span>
-                </div>
-
-                <div className="match-status">
-                    <p className="match-status__situacao">{status}</p>
-                    <p className="match-status__data">
-                        <time dateTime={dataHora}>{formatarDataHora(dataHora)}</time>
+                <div className="match-competicao">
+                    <p className="match-competicao__nome">
+                        <span className="match-competicao__icone" aria-hidden="true">
+                            <Trophy size={13} />
+                        </span>
+                        {competicao.nome}
+                        <span className="match-competicao__rodada">{competicao.rodada}</span>
                     </p>
+
+                    <div className="match-acoes">
+                        <button
+                            type="button"
+                            className="match-acao"
+                            aria-pressed={partidaFavorita}
+                            onClick={alternarFavoritoPartida}
+                        >
+                            <Star
+                                size={16}
+                                fill={partidaFavorita ? "currentColor" : "none"}
+                            />
+                            {partidaFavorita ? "Favoritado" : "Favoritar"}
+                        </button>
+
+                        <button type="button" className="match-acao" onClick={compartilhar}>
+                            <Share2 size={16}/>
+                            <span aria-live="polite">{linkCopiado ? "Link copiado" : "Compartilhar"}</span>
+                        </button>
+                    </div>
                 </div>
+            
+                <h1 className="sr-only">
+                    {casa.nome} {placar.casa} x {placar.visitante} {visitante.nome}
+                </h1>
 
-                <div className="match-lado match-lado--visitante">
-                    <span className="match-placar__gols">{placar.visitante}</span>
+                <div className="match-placar">
+                    <div className="match-lado match-lado--casa">
+                        <Time
+                            time={casa}
+                            lado="casa"
+                            favorito={casaFavorita}
+                            aoFavoritar={() => alternarFavoritoTime(casa, casaFavorita)}
+                        />
+                        <span className="match-placar__gols">{placar.casa}</span>
+                    </div>
 
-                    <Time
-                        time={visitante}
-                        lado="visitante"
-                        favorito={visitanteFavorito}
-                        aoFavoritar={() => alternarTimeFavorito(visitante.id)}
-                    />
-                </div>  
+                    <div className="match-status">
+                        <p className="match-status__situacao">{status}</p>
+                        <p className="match-status__data">
+                            <time dateTime={dataHora}>{formatarDataHora(dataHora)}</time>
+                        </p>
+                    </div>
 
-                <ListaGols gols={gols.casa} lado="casa" />
-                <ListaGols gols={gols.visitante} lado="visitante" />
-            </div>
-        </header>
+                    <div className="match-lado match-lado--visitante">
+                        <span className="match-placar__gols">{placar.visitante}</span>
+
+                        <Time
+                            time={visitante}
+                            lado="visitante"
+                            favorito={visitanteFavorito}
+                            aoFavoritar={() => alternarFavoritoTime(visitante, visitanteFavorito)}
+                        />
+                    </div>  
+
+                    <ListaGols gols={gols.casa} lado="casa" />
+                    <ListaGols gols={gols.visitante} lado="visitante" />
+                </div>
+            </header>
+            <Modal
+                aberto={Boolean(remocaoPendente)}
+                titulo="Remover dos favoritos?"
+                descricao={
+                    remocaoPendente?.tipo === "partida"
+                        ? `Deseja remover ${remocaoPendente.nome} dos seus jogos favoritos?`
+                        : `Deseja remover ${remocaoPendente?.nome} dos seus times favoritos?`
+                }
+                tamanho="pequeno"
+                aoFechar={fecharModal}
+                rodape={
+                    <>
+                        <button
+                            type="button"
+                            className="modal__botao modal__botao--secundario"
+                            onClick={fecharModal}
+                        >
+                            Cancelar
+                        </button>
+
+                        <button
+                            type="button"
+                            className="modal__botao modal__botao--perigo"
+                            onClick={confirmarRemocao}
+                        >
+                            Remover
+                        </button>
+                    </>
+                }
+            >
+                <p className="modal__aviso">
+                    Você poderá adicionar novamente este item aos favoritos posteriormente.
+                </p>
+            </Modal>
+        </>
     );
 
 }
