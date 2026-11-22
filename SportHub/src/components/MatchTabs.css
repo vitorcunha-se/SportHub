@@ -1,48 +1,84 @@
+
 /* ===== Abas da partida ===== */
 .match-tabs {
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
     gap: clamp(18px, 3vw, 36px);
+    width: 100%;
+    min-width: 0;
     margin-top: 20px;
     overflow-x: auto;
     scrollbar-width: none;
-    min-width: 0;
 }
 
 .match-tabs::-webkit-scrollbar {
     display: none;
 }
 
-.match-tab {
+/* Cada aba ocupa somente o espaço necessário */
+.match-tabs .match-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     flex: 0 0 auto;
-    width: max-content;
+    width: fit-content;
+    min-width: max-content;
+
     padding: 14px 2px 12px;
-    border: 0;
-    border-bottom: 2px solid transparent;
+    border: none;
     background: none;
+
     color: var(--match-muted);
     font-size: 14px;
     font-weight: 500;
     white-space: nowrap;
     cursor: pointer;
-
-    transition:
-        color 0.25s ease,
-        border-color 0.25s ease;
 }
 
-.match-tab:hover {
+/* Sublinhado individual */
+.match-tabs .match-tab::after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    bottom: 0;
+
+    height: 2px;
+    border-radius: 2px;
+    background: var(--match-azul);
+
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.match-tabs .match-tab:hover {
     color: var(--match-texto);
 }
 
-.match-tab[aria-selected="true"] {
-    border-bottom-color: var(--match-azul);
+/* Somente a aba selecionada recebe o indicador */
+.match-tabs .match-tab[aria-selected="true"] {
     color: var(--match-azul);
     font-weight: 600;
 }
 
-.match-tab:focus-visible {
+.match-tabs .match-tab[aria-selected="true"]::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.match-tabs .match-tab:focus-visible {
     outline: 2px solid var(--match-azul);
     outline-offset: -2px;
     border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .match-tabs .match-tab::after {
+        transition: none;
+    }
 }
