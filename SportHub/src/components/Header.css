@@ -1,24 +1,25 @@
+
 .header {
     width: 100%;
     min-height: 68px;
-    box-sizing: border-box;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-
     padding: 0 24px;
 
     background: var(--cor-fundo);
     color: var(--cor-texto);
 }
 
+.logo {
+    flex-shrink: 0;
+}
+
 .logo-png {
     width: 180px;
     height: 60px;
     object-fit: contain;
-    flex-shrink: 0;
 }
 
 .logo-button {
@@ -33,20 +34,16 @@
 .search-bar {
     display: flex;
     align-items: center;
-
     width: 100%;
     max-width: 500px;
     min-width: 0;
     height: 38px;
-    box-sizing: border-box;
-
     margin: 0 auto;
     padding: 0 10px;
 
     background: var(--cor-superficie-secundaria);
     border: 1px solid var(--cor-borda);
     border-radius: 8px;
-
     transition: border-color 0.2s ease;
 }
 
@@ -54,15 +51,12 @@
     width: 100%;
     min-width: 0;
     height: 100%;
-    box-sizing: border-box;
-
     padding: 0 0 0 10px;
     border: none;
     outline: none;
 
     background: transparent;
     color: var(--cor-texto);
-
     font-family: inherit;
     font-size: 13px;
 }
@@ -79,16 +73,12 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-
     gap: 20px;
-    width: auto;
     flex-shrink: 0;
-    padding: 0;
 }
 
 .notification-button {
     position: relative;
-
     width: 36px;
     height: 36px;
     flex-shrink: 0;
@@ -100,15 +90,11 @@
     padding: 0;
     border: none;
     border-radius: 8px;
-
     background: transparent;
     color: var(--cor-texto-secundario);
-
     cursor: pointer;
 
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .notification-button:hover,
@@ -120,18 +106,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     padding: 0;
     border: none;
-
     background: transparent;
     color: #8795a8;
-
     cursor: pointer;
 }
 
 .user-button:hover {
-    color: #fff;
+    color: var(--cor-texto);
 }
 
 .user-avatar {
@@ -143,13 +126,10 @@
     align-items: center;
     justify-content: center;
 
-    box-sizing: border-box;
     border: 1px solid #3985f6;
     border-radius: 50%;
-
     background: #1769e0;
     color: #fff;
-
     font-size: 15px;
     font-weight: 600;
 }
@@ -159,8 +139,6 @@
     align-items: center;
     justify-content: flex-end;
     gap: 12px;
-
-    width: max-content;
     flex-shrink: 0;
 }
 
@@ -170,12 +148,10 @@
     align-items: center;
     justify-content: center;
 
-    box-sizing: border-box;
     height: 38px;
     padding: 0 16px;
-    margin: 0;
-
     border-radius: 8px;
+
     font-size: 14px;
     font-weight: 600;
     line-height: 1;
@@ -199,42 +175,104 @@
     background: #1258bd;
 }
 
+/* Tablets e celulares */
 @media (max-width: 700px) {
     .header {
         gap: 12px;
-        padding: 0 12px;
+        padding: 0 14px;
     }
 
     .logo-png {
-        width: 100px;
+        width: 110px;
         height: 48px;
     }
 
-    .search-bar {
-        max-width: none;
+    .header-actions {
+        gap: 10px;
     }
 
-    .header-actions {
-        width: auto;
-        gap: 8px;
+    .auth-buttons {
+        gap: 6px;
+    }
+
+    .login-button,
+    .register-button {
+        padding: 0 10px;
+        font-size: 12px;
     }
 }
 
+/* Celulares pequenos */
 @media (max-width: 450px) {
+    .header {
+        min-height: 60px;
+        gap: 8px;
+        padding: 0 10px;
+    }
+
     .logo-png {
-        width: 64px;
+        width: 85px;
+        height: 42px;
     }
 
     .search-bar {
         height: 34px;
+        padding: 0 7px;
+    }
+
+    .search-bar input {
+        font-size: 11px;
+        padding-left: 6px;
+    }
+
+    .search-icon {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
     }
 
     .header-actions {
-        gap: 4px;
+        gap: 6px;
     }
 
     .user-avatar {
         width: 32px;
         height: 32px;
+    }
+
+    .notification-button {
+        width: 30px;
+        height: 30px;
+    }
+
+    .auth-buttons {
+        gap: 5px;
+    }
+
+    .login-button,
+    .register-button {
+        height: 34px;
+        padding: 0 8px;
+        font-size: 11px;
+    }
+}
+
+/* Telas extremamente estreitas */
+@media (max-width: 360px) {
+    .header {
+        gap: 6px;
+        padding: 0 8px;
+    }
+
+    .logo-png {
+        width: 70px;
+    }
+
+    .search-bar input {
+        font-size: 10px;
+    }
+
+    .header-actions {
+        gap: 4px;
     }
 }

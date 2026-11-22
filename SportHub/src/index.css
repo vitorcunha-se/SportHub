@@ -39,3 +39,12 @@ input {
     white-space: nowrap;
     border: 0;
 }
+
+img,
+svg {
+    max-width: 100%;
+}
+
+img {
+    height: auto;
+}

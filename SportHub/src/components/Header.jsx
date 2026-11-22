@@ -1,9 +1,16 @@
-import logo from "../assets/logo-sportshub.png";
+import logoDark from "../assets/logo_dark_sporthub.png";
+import logoLight from "../assets/logo_light_sporthub.png";
 import { Search, Bell } from "lucide-react";
+import { useApp } from "../context/useApp.jsx";
 import "./Header.css";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Header({usuario, aoNavegar}) {
+
+  const { tema } = useApp();
+
+  const logo = tema === "light" ? logoLight : logoDark;
+
   return (
     <header className="header">
 

@@ -97,7 +97,22 @@
   text-align: right;
 }
 
-@media (max-width: 860px) { .game-card { flex-basis: 78%; } }
+/* Tablets */
+@media (max-width: 860px) {
+    .game-card {
+        flex: 0 0 340px;
+        min-width: 0;
+    }
+}
+
+/* Celulares */
+@media (max-width: 480px) {
+    .game-card {
+        flex: 0 0 88%;
+        min-width: 0;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .game-card { transition: none; }
   .game-card__status--aovivo::before { animation: none; }
